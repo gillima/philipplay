@@ -54,7 +54,6 @@ class Controller(threading.Thread):
 
     def _run(self):
         while not self._event.is_set():
-            pygame.event.pump()
             for event in  pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     self._on_press(event.key, event.mod)
@@ -62,4 +61,6 @@ class Controller(threading.Thread):
                 if event.type == NEXT_SONG:
                     self._library.next()
                     self._player.play(self._library.song)
+
+            pygame.time.wait(0)
 
