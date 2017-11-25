@@ -1,4 +1,11 @@
 .idea/
+.pybuild/
+debian/*.debhelper
+debian/*.substvars
+debian/philipplay/
+debian/files
+debian/install
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
