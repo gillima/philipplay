@@ -23,7 +23,7 @@ class Player(object):
     @volume.setter
     def volume(self, value):
         value = min(1, max(0, value))
-        logger.debug('set volume %s', value)
+        logger.info('set volume %s', value)
         mixer.music.set_volume(value)
 
     def __enter__(self):
@@ -36,7 +36,7 @@ class Player(object):
 
     def play(self, filename):
         self.stop()
-        logger.debug('play song %s', filename)
+        logger.info('play song %s', filename)
         mixer.music.set_endevent(NEXT_SONG)
         mixer.music.load(filename)
         mixer.music.play()
@@ -52,5 +52,5 @@ class Player(object):
             time.sleep(.1)
 
         mixer.music.stop()
-        logger.debug('song stopped')
+        logger.info('song stopped')
 

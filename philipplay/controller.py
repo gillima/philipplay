@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class Controller(threading.Thread):
     def __init__(self, player, library, event):
-        threading.Thread.__init__(self, target=self._run, name='philipplay-player')
+        threading.Thread.__init__(self, target=self._run, name='philipplay-eventloop')
         self._player = player
         self._library = library
         self._event = event
