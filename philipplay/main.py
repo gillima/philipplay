@@ -48,4 +48,6 @@ def parse_main():
 
 
 if __name__ == '__main__':
+    # TODO: Add autostart for raspian
+    # http://www.raspberry-projects.com/pi/pi-operating-systems/raspbian/auto-running-programs-gui
     parse_main()
