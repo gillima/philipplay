@@ -17,16 +17,19 @@ shutdown = threading.Event()
 
 
 def signal_handler(signal, frame):
+    """Signal handler to intercept SIGINT"""
     shutdown.set()
 
 
 def setup_parser():
+    """Setup the command line argument parser"""
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', help='Path to the configuration file')
     return parser
 
 
 def setup_environment():
+    """Setup the pygame environment"""
     logging.debug('setup pygame environment')
     pygame.init()
     pygame.display.init()
@@ -35,6 +38,7 @@ def setup_environment():
 
 
 def parse_main():
+    """The application main entry point"""
     parser = setup_parser()
     args = parser.parse_args().__dict__
     config_path = args.get('config', None) or '/etc/philipplay.yaml'
@@ -43,17 +47,11 @@ def parse_main():
     logging.config.dictConfig(log_config)
 
     setup_environment()
-    base_path = config.get('base_path', '~/Music/')
-    supported = config.get('supported', ['.mp3', '.ogg'])
-    with Player(fadeout=.5) as player,\
-            Library(base_path, supported=supported) as library,\
-            Controller(player, library, event=shutdown):
+    with Player(**config) as player, Library(**config) as library, Controller(player, library, event=shutdown):
         logger.info('Press Q to shutdown')
         shutdown.wait()
         logger.info('Shutting down audio player')
 
 
 if __name__ == '__main__':
-    # TODO: Add autostart for raspian
-    # http://www.raspberry-projects.com/pi/pi-operating-systems/raspbian/auto-running-programs-gui
     parse_main()
