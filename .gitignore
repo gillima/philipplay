@@ -11,6 +11,7 @@ docs/build
 # debuild
 debian/*.debhelper
 debian/*.substvars
+debian/install
 debian/debhelper-build-stamp
 debian/files
 debian/philipplay/
