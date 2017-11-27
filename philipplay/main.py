@@ -26,6 +26,14 @@ def setup_parser():
     return parser
 
 
+def setup_environment():
+    logging.debug('setup pygame environment')
+    pygame.init()
+    pygame.display.init()
+    pygame.display.set_mode((0,0), pygame.FULLSCREEN | pygame.NOFRAME)
+    signal.signal(signal.SIGINT, signal_handler)
+
+
 def parse_main():
     parser = setup_parser()
     args = parser.parse_args().__dict__
@@ -34,12 +42,7 @@ def parse_main():
         config, log_config = yaml.load_all(config_file)
     logging.config.dictConfig(log_config)
 
-    logging.debug('create hidden window for input')
-    pygame.init()
-    pygame.display.init()
-    pygame.display.set_mode((1,1))
-    signal.signal(signal.SIGINT, signal_handler)
-
+    setup_environment()
     base_path = config.get('base_path', '~/Music/')
     with Player(fadeout=.5) as player, Library(base_path) as library, Controller(player, library, event=shutdown) as controller:
         logger.info('Press Q to shutdown')
