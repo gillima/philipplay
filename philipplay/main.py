@@ -44,7 +44,10 @@ def parse_main():
 
     setup_environment()
     base_path = config.get('base_path', '~/Music/')
-    with Player(fadeout=.5) as player, Library(base_path) as library, Controller(player, library, event=shutdown) as controller:
+    supported = config.get('supported', ['.mp3', '.ogg'])
+    with Player(fadeout=.5) as player,\
+            Library(base_path, supported=supported) as library,\
+            Controller(player, library, event=shutdown):
         logger.info('Press Q to shutdown')
         shutdown.wait()
         logger.info('Shutting down audio player')

@@ -12,6 +12,9 @@ STOP = pygame.USEREVENT + 2
 
 
 class Player(object):
+    """
+    Simple audio player which used `pygame.mixer` to play audio files.
+    """
 
     def __init__(self, **kwargs):
         self._fadeout = int(kwargs.get('fadeout', 1) * 1000)

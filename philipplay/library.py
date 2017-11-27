@@ -5,7 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 class Library(object):
-    def __init__(self, base_path):
+    def __init__(self, base_path, **kwargs):
+        self._supported = kwargs.get('supported', ['.mp3', '.ogg'])
         self._base_path = os.path.expanduser(base_path)
         self._libraries = list()
         self._current_library = 0
@@ -46,7 +47,7 @@ class Library(object):
             logger.info('adding songs from directory %s', directory)
             self._libraries.append(list(os.path.join(directory, file) for file in sorted(os.listdir(directory))
                                         if os.path.isfile(os.path.join(directory, file))
-                                        and file.lower().endswith('.ogg')))
+                                        and os.path.splitext(file.lower())[1] in self._supported))
 
     def __str__(self):
         return '%s' % self._libraries

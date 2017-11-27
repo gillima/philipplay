@@ -1,5 +1,6 @@
 version: 1
 base_path: ~/Music/
+supported: ['.mp3', '.ogg']
 
 ---
 version: 1
