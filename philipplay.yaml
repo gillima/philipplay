@@ -1,5 +1,5 @@
 version: 1
-base_path: ~/Music/
+base_path: /media/usb/
 supported: ['.mp3', '.ogg']
 
 ---

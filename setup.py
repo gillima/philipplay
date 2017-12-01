@@ -100,7 +100,9 @@ setup(
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     data_files=[
         ('/etc', ['philipplay.yaml']),
-        # ('/etc/xdg/autostart', ['philipplay-autostart.desktop'])
+        ('/lib/udev/rules.d', ['scripts/98-usbstick.rules']),
+        ('/lib/systemd/system', ['scripts/usbstick-handler@.service']),
+        # ('/etc/xdg/autostart', ['scripts/philipplay-autostart.desktop']),
     ],
 
     # To provide executable scripts, use entry points in preference to the
