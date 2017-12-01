@@ -21,5 +21,6 @@ Depends:       ${misc:Depends},
                python3-pygame,
                python3-argcomplete,
                python3-setuptools,
+               python3-watchdog,
 Description: Audio Player for Raspberry Pi
  Simple Audio Player to be used on a Raspberry Pi

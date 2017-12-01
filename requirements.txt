@@ -1,1 +1,4 @@
 pygame
+argcomplete
+setuptools
+watchdog
