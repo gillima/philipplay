@@ -5,11 +5,12 @@ https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
 
-# Always prefer setuptools over distutils
-from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+
+# Always prefer setuptools over distutils
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -99,7 +100,7 @@ setup(
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     data_files=[
         ('/etc', ['philipplay.yaml']),
-        ('/etc/xdg/autostart', ['philipplay-autostart.desktop'])
+        # ('/etc/xdg/autostart', ['philipplay-autostart.desktop'])
     ],
 
     # To provide executable scripts, use entry points in preference to the

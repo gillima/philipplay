@@ -11,6 +11,7 @@ NEXT_SONG = pygame.USEREVENT + 1
 STOP = pygame.USEREVENT + 2
 
 
+# noinspection PyArgumentList
 class Player(object):
     """
     Simple audio player which used `pygame.mixer` to play audio files.

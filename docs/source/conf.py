@@ -18,6 +18,7 @@
 #
 import os
 import sys
+# noinspection PyPackageRequirements
 import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('../..'))
 
@@ -47,6 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PhilipPlay'
+# noinspection PyShadowingBuiltins
 copyright = u'2017, Bruno Leupi'
 author = u'Bruno Leupi'
 

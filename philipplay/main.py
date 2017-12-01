@@ -5,6 +5,7 @@ import logging.config
 import signal
 import threading
 
+import os
 import pygame
 import yaml
 
@@ -16,7 +17,8 @@ logger = logging.getLogger('philipplay')
 shutdown = threading.Event()
 
 
-def signal_handler(signal, frame):
+# noinspection PyUnusedLocal
+def signal_handler(signal_number, frame):
     """Signal handler to intercept SIGINT"""
     shutdown.set()
 
@@ -31,9 +33,10 @@ def setup_parser():
 def setup_environment():
     """Setup the pygame environment"""
     logging.debug('setup pygame environment')
+    os.environ['SDL_VIDEODRIVER'] = 'dummy'
     pygame.init()
     pygame.display.init()
-    pygame.display.set_mode((0,0), pygame.FULLSCREEN | pygame.NOFRAME)
+    pygame.display.set_mode((1, 1))
     signal.signal(signal.SIGINT, signal_handler)
 
 
