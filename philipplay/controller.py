@@ -21,6 +21,7 @@ class Controller(threading.Thread):
         threading.Thread.__init__(self, target=self._run, name='philipplay-eventloop')
         self._player = player
         self._library = library
+        self._library.on_changed = self._on_library_changed
         self._event = event
 
     def __enter__(self):
@@ -36,6 +37,10 @@ class Controller(threading.Thread):
         self._event.set()
         self.join()
         self._keyboard.set_normal_term()
+
+    def _on_library_changed(self):
+        logger.info('Library changed. Stop player')
+        self._player.stop()
 
     # noinspection PyUnusedLocal
     def _on_press(self, key, mods):
@@ -80,4 +85,4 @@ class Controller(threading.Thread):
                     key = self._keyboard.get_char()
                     self._on_press(key, 0)
 
-            pygame.time.wait(0)
+            pygame.time.wait(100)

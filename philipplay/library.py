@@ -1,7 +1,7 @@
 import logging
 import os
 
-from watchdog.events import PatternMatchingEventHandler, DirModifiedEvent, DirCreatedEvent
+from watchdog.events import PatternMatchingEventHandler, DirModifiedEvent, DirCreatedEvent, DirMovedEvent
 from watchdog.observers import Observer
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ class Library(PatternMatchingEventHandler):
         self._libraries = list()
         self._current_library = 0
         self._current_song = -1
+        self.on_changed = lambda *a, **kw: None
 
     def __enter__(self):
         """Starts the song library"""
@@ -64,6 +65,7 @@ class Library(PatternMatchingEventHandler):
         logger.info('loading audio library %s', self._base_path)
         if not os.path.isdir(self._base_path):
             logger.info('audio library is empty')
+            self.on_changed()
             return
 
         for directory in sorted(os.listdir(self._base_path)):
@@ -76,11 +78,23 @@ class Library(PatternMatchingEventHandler):
                                         if os.path.isfile(os.path.join(directory, file))
                                         and os.path.splitext(file.lower())[1] in self._supported))
 
+        self.library = self._current_library
+        self.on_changed()
+
     def on_any_event(self, event):
-        if not isinstance(event, (DirModifiedEvent, DirCreatedEvent)):
+        """Handles directry change events to detect USB stick plug events"""
+        if not isinstance(event, (DirModifiedEvent, DirCreatedEvent, DirMovedEvent)):
+            logger.debug('Ignore not handled event: %s', event)
             return
-        if str(event.src_path).startswith(self._base_path):
-            self._scan_library()
+
+        src_path = os.path.abspath(event.src_path) if hasattr(event, 'src_path') else ''
+        dest_path = os.path.abspath(event.dest_path) if hasattr(event, 'dest_path') else ''
+
+        if not src_path.startswith(self._base_path) and not dest_path.startswith(self._base_path):
+            logger.debug('Ignore change of not watched directory: %s', event)
+            return
+
+        self._scan_library()
 
     def __str__(self):
         return '%s' % self._libraries
