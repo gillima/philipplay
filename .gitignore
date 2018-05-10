@@ -5,6 +5,7 @@
 .cache/
 .idea
 .pybuild
+venv/
 __pycache__/
 docs/build
 *-dev.yaml
