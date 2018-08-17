@@ -25,7 +25,9 @@ class Library(RegexMatchingEventHandler):
         self._current_song = -1
         self.on_changed = lambda *a, **kw: None
 
-        regex = r'{}.*?\/.*?\.(mp3|ogg)'.format(self._base_path.replace('/', '\/'))
+        regex = r'{root_dir}.*?\/.*?\.({extensions})'.format(
+            root_dir=self._base_path.replace('/', '\/'),
+            extensions='|'.join(self._supported))
         super(Library, self).__init__(regexes=[regex])
 
     def __enter__(self):
