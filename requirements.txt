@@ -1,2 +1,4 @@
 pygame
-pynput
+argcomplete
+setuptools
+watchdog

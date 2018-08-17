@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with python3,sphinxdoc,systemd --buildsystem=pybuild --fail-missing
+
+override_dh_installinit:
+	true
+
+override_dh_auto_build:
+	dh_auto_build
+	PYTHONPATH=. sphinx-build -N -bman ./docs/source ./docs/build/man
+
+override_dh_installinit:
+	dh_installinit --name=usbstick-handler --noscripts

@@ -1,0 +1,10 @@
+[Unit]
+Description=Mount USB sticks
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/pmount --umask 000 --noatime -w --sync /dev/%I usb
+ExecStop=/usr/bin/pumount /dev/%I

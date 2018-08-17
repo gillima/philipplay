@@ -1,0 +1,26 @@
+Source: philipplay
+Section: python
+Priority: optional
+Maintainer: Markus Gilli <m.gi@gmx.ch>
+Build-Depends: debhelper (>= 9.20160709),
+               dh-python,
+               python3,
+               python3-argcomplete,
+               python3-setuptools,
+               python3-setuptools-scm,
+               python3-sphinx,
+               python3-sphinx-rtd-theme,
+Standards-Version: 3.9.7
+X-Python3-Version: >= 3.5
+
+Package: philipplay
+Architecture: all
+Depends:       ${misc:Depends},
+               ${python3:Depends},
+               pmount,
+               python3-pygame,
+               python3-argcomplete,
+               python3-setuptools,
+               python3-watchdog,
+Description: Audio Player for Raspberry Pi
+ Simple Audio Player to be used on a Raspberry Pi

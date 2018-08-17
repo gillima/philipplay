@@ -1,0 +1,6 @@
+tar-ignore='.git'
+tar-ignore='.gitignore'
+tar-ignore='.pybuild'
+tar-ignore='.idea'
+tar-ignore='docs/build'
+tar-ignore='*.egg-info'
