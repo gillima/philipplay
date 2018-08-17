@@ -101,8 +101,7 @@ setup(
     data_files=[
         ('/etc', ['philipplay.yaml']),
         ('/lib/udev/rules.d', ['scripts/98-usbstick.rules']),
-        ('/lib/systemd/system', ['scripts/usbstick-handler@.service']),
-        # ('/etc/xdg/autostart', ['scripts/philipplay-autostart.desktop']),
+      # ('/etc/xdg/autostart', ['scripts/philipplay-autostart.desktop']),
     ],
 
     # To provide executable scripts, use entry points in preference to the
