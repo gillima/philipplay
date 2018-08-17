@@ -1,27 +1,35 @@
 import logging
 import os
 
-from watchdog.events import PatternMatchingEventHandler, DirModifiedEvent, DirCreatedEvent
+from watchdog.events import FileCreatedEvent, RegexMatchingEventHandler, FileMovedEvent
 from watchdog.observers import Observer
 
 logger = logging.getLogger(__name__)
 
 
-class Library(PatternMatchingEventHandler):
+class SongList(object):
+    def __init__(self, directory, songs):
+        self.directory = directory
+        self.songs = songs
+
+
+class Library(RegexMatchingEventHandler):
     def __init__(self, **kwargs):
         """
         Initializes a new instance of the :class:`Library` class.
         """
-        super().__init__()
         self._supported = kwargs.get('supported', ['.mp3', '.ogg'])
-        self._base_path = os.path.expanduser(kwargs.get('base_path', '~/Music'))
+        self._base_path = os.path.join(os.path.expanduser(kwargs.get('base_path', '~/Music')), '')
         self._libraries = list()
         self._current_library = 0
         self._current_song = -1
 
+        regex = r'{}.*?\/.*?\.(mp3|ogg)'.format(self._base_path.replace('/', '\/'))
+        super(Library, self).__init__(regexes=[regex])
+
     def __enter__(self):
         """Starts the song library"""
-        self._scan_library()
+        self._rescan_library()
         self._observer = Observer()
         parent = os.path.abspath(os.path.join(self._base_path, os.pardir))
         self._observer.schedule(self, path=parent, recursive=True)
@@ -47,7 +55,9 @@ class Library(PatternMatchingEventHandler):
     @property
     def song(self):
         """Gets the current selected song of the current song library"""
-        if not self._libraries or not self._libraries[self._current_library]:
+        if self._current_library >= len(self._libraries):
+            return
+        if self._current_song >= len(self._libraries[self._current_library]):
             return
         return self._libraries[self._current_library][self._current_song]
 
@@ -57,7 +67,7 @@ class Library(PatternMatchingEventHandler):
             return
         self._current_song = (self._current_song + 1) % len(self._libraries[self._current_library])
 
-    def _scan_library(self):
+    def _rescan_library(self):
         """Scans the root directory for song libraries"""
         self._libraries.clear()
 
@@ -66,21 +76,58 @@ class Library(PatternMatchingEventHandler):
             logger.info('audio library is empty')
             return
 
-        for directory in sorted(os.listdir(self._base_path)):
+        for index, directory in enumerate(sorted(os.listdir(self._base_path))):
             directory = os.path.join(self._base_path, directory)
             if not os.path.isdir(directory):
                 continue
 
             logger.info('adding songs from directory %s', directory)
-            self._libraries.append(list(os.path.join(directory, file) for file in sorted(os.listdir(directory))
-                                        if os.path.isfile(os.path.join(directory, file))
-                                        and os.path.splitext(file.lower())[1] in self._supported))
+            self._libraries.append(sorted(
+                [os.path.join(directory, file)
+                 for file in os.listdir(directory)
+                 if os.path.isfile(os.path.join(directory, file))
+                 and os.path.splitext(file.lower())[1] in self._supported]
+            ))
 
     def on_any_event(self, event):
-        if not isinstance(event, (DirModifiedEvent, DirCreatedEvent)):
+        if isinstance(event, FileCreatedEvent):
+            self._on_file_created(str(event.src_path))
+
+        if isinstance(event, FileMovedEvent):
+            self._on_file_removed(str(event.src_path))
+            self._on_file_created(str(event.dest_path))
+
+    def _on_file_removed(self, file_path):
+        for index, library in enumerate(self._libraries[:]):
+            if file_path in library:
+                logger.info('remove song from directory %s', file_path)
+                library.remove(file_path)
+                if not library:
+                    self._libraries.remove(library)
+
+
+    def _on_file_created(self, file_path):
+        dir_name, file_name = os.path.split(file_path)
+        if not dir_name.startswith(self._base_path):
             return
-        if str(event.src_path).startswith(self._base_path):
-            self._scan_library()
+
+        library = [i for i, x in enumerate(self._libraries) if x[0].startswith(dir_name)]
+        if len(library) > 1:
+            logging.warning('can\'t add song, multiple libraries matches: %s', file_path)
+            return
+
+        if len(library) == 0:
+            logging.info('add new library: %s', dir_name)
+            self._libraries.append([file_path])
+            self._libraries = sorted(self._libraries)
+            return
+
+        index = library[0]
+        if file_path not in self._libraries[index]:
+            logging.info('add song to library: %s', file_path)
+            library = self._libraries[index]
+            library.append(file_path)
+            self._libraries[index] = sorted(library)
 
     def __str__(self):
         return '%s' % self._libraries
