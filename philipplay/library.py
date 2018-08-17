@@ -1,7 +1,7 @@
 import logging
 import os
 
-from watchdog.events import FileCreatedEvent, RegexMatchingEventHandler, FileMovedEvent
+from watchdog.events import FileCreatedEvent, RegexMatchingEventHandler, FileMovedEvent, DirCreatedEvent, DirMovedEvent
 from watchdog.observers import Observer
 
 logger = logging.getLogger(__name__)
@@ -23,6 +23,7 @@ class Library(RegexMatchingEventHandler):
         self._libraries = list()
         self._current_library = 0
         self._current_song = -1
+        self.on_changed = lambda *a, **kw: None
 
         regex = r'{}.*?\/.*?\.(mp3|ogg)'.format(self._base_path.replace('/', '\/'))
         super(Library, self).__init__(regexes=[regex])
@@ -74,6 +75,7 @@ class Library(RegexMatchingEventHandler):
         logger.info('loading audio library %s', self._base_path)
         if not os.path.isdir(self._base_path):
             logger.info('audio library is empty')
+            self.on_changed()
             return
 
         for index, directory in enumerate(sorted(os.listdir(self._base_path))):
@@ -89,22 +91,32 @@ class Library(RegexMatchingEventHandler):
                  and os.path.splitext(file.lower())[1] in self._supported]
             ))
 
+        self.library = self._current_library
+        self.on_changed()
+
     def on_any_event(self, event):
-        if isinstance(event, FileCreatedEvent):
+        if isinstance(event, (DirCreatedEvent, DirMovedEvent)):
+            if os.path.join(event.src_path, '') == self._base_path:
+                self._rescan_library()
+
+        elif isinstance(event, FileCreatedEvent):
             self._on_file_created(str(event.src_path))
 
-        if isinstance(event, FileMovedEvent):
+        elif isinstance(event, FileMovedEvent):
             self._on_file_removed(str(event.src_path))
             self._on_file_created(str(event.dest_path))
 
     def _on_file_removed(self, file_path):
+        changed = False
         for index, library in enumerate(self._libraries[:]):
             if file_path in library:
                 logger.info('remove song from directory %s', file_path)
                 library.remove(file_path)
+                changed = True
                 if not library:
                     self._libraries.remove(library)
 
+        self.on_changed()
 
     def _on_file_created(self, file_path):
         dir_name, file_name = os.path.split(file_path)
@@ -120,6 +132,7 @@ class Library(RegexMatchingEventHandler):
             logging.info('add new library: %s', dir_name)
             self._libraries.append([file_path])
             self._libraries = sorted(self._libraries)
+            self.on_changed()
             return
 
         index = library[0]
@@ -128,6 +141,7 @@ class Library(RegexMatchingEventHandler):
             library = self._libraries[index]
             library.append(file_path)
             self._libraries[index] = sorted(library)
+            self.on_changed()
 
     def __str__(self):
         return '%s' % self._libraries

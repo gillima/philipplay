@@ -16,6 +16,8 @@ GNU General Public License for more details.
 
 import os
 
+import time
+
 if os.name == 'nt':  # Windows
     # noinspection PyUnresolvedReferences
     import msvcrt
@@ -30,7 +32,6 @@ else:  # Posix (Linux, OS X)
 class Keyboard:
     def __init__(self):
         """Creates a KBHit object that you can call to do various keyboard things."""
-
         if os.name == 'nt':
             pass
         else:
@@ -47,13 +48,13 @@ class Keyboard:
                 # Support normal-terminal reset at exit
                 atexit.register(self.set_normal_term)
             except:
-                pass
+                self.old_term = []
 
     def set_normal_term(self):
         """Resets to normal terminal.  On Windows this is a no-op."""
         if os.name == 'nt':
             pass
-        else:
+        elif self.old_term:
             try:
                 termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old_term)
             except:
@@ -92,7 +93,8 @@ class Keyboard:
         """Returns True if keyboard character was hit, False otherwise."""
         if os.name == 'nt':
             return msvcrt.key_pressed()
-
-        else:
+        elif self.old_term:
             dr, dw, de = select([sys.stdin], [], [], 0)
             return dr != []
+        else:
+            return False
