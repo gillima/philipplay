@@ -34,24 +34,30 @@ class Keyboard:
         if os.name == 'nt':
             pass
         else:
-            # Save the terminal settings
-            self.fd = sys.stdin.fileno()
-            self.new_term = termios.tcgetattr(self.fd)
-            self.old_term = termios.tcgetattr(self.fd)
+            try:
+                # Save the terminal settings
+                self.fd = sys.stdin.fileno()
+                self.new_term = termios.tcgetattr(self.fd)
+                self.old_term = termios.tcgetattr(self.fd)
 
-            # New terminal setting unbuffered
-            self.new_term[3] = (self.new_term[3] & ~termios.ICANON & ~termios.ECHO)
-            termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.new_term)
+                # New terminal setting unbuffered
+                self.new_term[3] = (self.new_term[3] & ~termios.ICANON & ~termios.ECHO)
+                termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.new_term)
 
-            # Support normal-terminal reset at exit
-            atexit.register(self.set_normal_term)
+                # Support normal-terminal reset at exit
+                atexit.register(self.set_normal_term)
+            except:
+                pass
 
     def set_normal_term(self):
         """Resets to normal terminal.  On Windows this is a no-op."""
         if os.name == 'nt':
             pass
         else:
-            termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old_term)
+            try:
+                termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old_term)
+            except:
+                pass
 
     def get_char(self):
         """
@@ -62,7 +68,7 @@ class Keyboard:
             raw_char = msvcrt.get_char().decode('utf-8')
         else:
             raw_char = sys.stdin.read(1)
-        return ord(raw_char.lower())
+        return ord(raw_char.strip().lower())
 
     def get_arrow(self):
         """
