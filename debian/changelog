@@ -1,3 +1,11 @@
+philipplay (0.1.2) unstable; urgency=medium
+
+  * Support for inode Observation
+  * USB Device Observation
+  * Keyboard Input Improvements
+
+ -- Markus Gilli <m.gi@gmx.ch>  Fri, 17 Aug 2018 13:38:01 +0200
+
 philipplay (0.1.1) unstable; urgency=medium
 
   * Initial release.
