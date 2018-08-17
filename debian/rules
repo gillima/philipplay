@@ -11,4 +11,4 @@ override_dh_auto_build:
 	PYTHONPATH=. sphinx-build -N -bman ./docs/source ./docs/build/man
 
 override_dh_installinit:
-	dh_installinit --name=usbstick-handler@ --noscripts
+	dh_installinit --name=usbstick-handler --noscripts
