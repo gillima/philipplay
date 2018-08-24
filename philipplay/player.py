@@ -54,6 +54,9 @@ class Player(object):
         :param str filename: Absolute path to the audio file to be played
         """
         self.stop()
+        if not filename:
+            return
+
         logger.info('play song %s', filename)
         mixer.music.set_endevent(NEXT_SONG)
         mixer.music.load(filename)

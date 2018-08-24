@@ -52,6 +52,9 @@ class Library(RegexMatchingEventHandler):
     @library.setter
     def library(self, value):
         """Selects a song library"""
+        if not self._libraries:
+            return
+
         self._current_library = value % len(self._libraries)
         self._current_song = -1
 
@@ -97,9 +100,8 @@ class Library(RegexMatchingEventHandler):
         self.on_changed()
 
     def on_any_event(self, event):
-        if isinstance(event, (DirCreatedEvent, DirMovedEvent)):
-            if os.path.join(event.src_path, '') == self._base_path:
-                self._rescan_library()
+        if isinstance(event, (DirCreatedEvent, DirMovedEvent, DirCreatedEvent)):
+            self._rescan_library()
 
         elif isinstance(event, FileCreatedEvent):
             self._on_file_created(str(event.src_path))

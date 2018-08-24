@@ -35,6 +35,16 @@ an entry in the systems autostart folder. Next time you boot your *Raspberry Pi*
 audio player will automatically start in fullscreen mode.
 
 
+Keyboard Mapping
+----------------
+
+* "1-9" - Select Folders and Skip Songs
+* "0,S" - Stop Playing
+* "+." - Increase Volume
+* "-," - Decrease Volume
+* "Q" - Quit Player
+
+
 Indices and tables
 ==================
 

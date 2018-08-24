@@ -68,7 +68,9 @@ class Keyboard:
             raw_char = msvcrt.get_char().decode('utf-8')
         else:
             raw_char = sys.stdin.read(1)
-        return ord(raw_char.strip().lower())
+        raw_char = raw_char.strip().lower()
+        if raw_char != '':
+            return ord(raw_char)
 
     def get_arrow(self):
         """
