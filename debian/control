@@ -17,7 +17,9 @@ Package: philipplay
 Architecture: all
 Depends:       ${misc:Depends},
                ${python3:Depends},
+               udev,
                pmount,
+               python3-systemd,
                python3-pygame,
                python3-argcomplete,
                python3-setuptools,

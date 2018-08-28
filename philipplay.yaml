@@ -11,7 +11,7 @@ formatters:
 
 root:
     level: INFO
-    handlers: [console]
+    handlers: [console, journal]
 
 loggers:
   philipplay:
@@ -23,3 +23,6 @@ handlers:
         level: INFO
         formatter: simple
         stream: ext://sys.stdout
+    journal:
+      class: systemd.journal.JournalHandler
+      level: !!python/name:logging.INFO

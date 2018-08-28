@@ -1,7 +1,8 @@
 import logging
 import os
 
-from watchdog.events import FileCreatedEvent, RegexMatchingEventHandler, FileMovedEvent, DirCreatedEvent, DirMovedEvent
+from watchdog.events import FileCreatedEvent, RegexMatchingEventHandler, FileMovedEvent, DirCreatedEvent, \
+    DirDeletedEvent, DirModifiedEvent
 from watchdog.observers import Observer
 
 logger = logging.getLogger(__name__)
@@ -25,10 +26,12 @@ class Library(RegexMatchingEventHandler):
         self._current_song = -1
         self.on_changed = lambda *a, **kw: None
 
-        regex = r'{root_dir}.*?\/.*?\.({extensions})'.format(
-            root_dir=self._base_path.replace('/', '\/'),
-            extensions='|'.join(self._supported))
-        super(Library, self).__init__(regexes=[regex])
+        regexes = [
+            r'{root_dir}'.format(
+                root_dir=os.path.abspath(os.path.join(self._base_path, os.pardir)).replace('/', '\/')
+            )
+        ]
+        super(Library, self).__init__(regexes=regexes)
 
     def __enter__(self):
         """Starts the song library"""
@@ -52,6 +55,9 @@ class Library(RegexMatchingEventHandler):
     @library.setter
     def library(self, value):
         """Selects a song library"""
+        if not self._libraries:
+            return
+
         self._current_library = value % len(self._libraries)
         self._current_song = -1
 
@@ -97,9 +103,8 @@ class Library(RegexMatchingEventHandler):
         self.on_changed()
 
     def on_any_event(self, event):
-        if isinstance(event, (DirCreatedEvent, DirMovedEvent)):
-            if os.path.join(event.src_path, '') == self._base_path:
-                self._rescan_library()
+        if isinstance(event, (DirCreatedEvent, DirModifiedEvent, DirDeletedEvent)):
+            self._rescan_library()
 
         elif isinstance(event, FileCreatedEvent):
             self._on_file_created(str(event.src_path))

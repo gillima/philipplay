@@ -46,12 +46,12 @@ class Controller(threading.Thread):
     def _on_press(self, key, mods):
         """Handles key press events from pygame"""
         try:
-            if key == pygame.K_UP:
-                self._player.volume += .1
-            elif key == pygame.K_DOWN:
-                self._player.volume -= .1
+            if key == pygame.K_UP or key == pygame.K_PLUS or key == pygame.K_PERIOD:
+                self._player.volume += .05
+            elif key == pygame.K_DOWN or key == pygame.K_MINUS or key == pygame.K_COMMA:
+                self._player.volume -= .05
 
-            elif key == pygame.K_0:
+            elif key == pygame.K_0 or key == pygame.K_s:
                 self._player.stop()
             elif pygame.K_1 <= key <= pygame.K_9:
                 self._select_song(key - pygame.K_0 - 1)

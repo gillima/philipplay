@@ -57,7 +57,7 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3',
     ],
 
     # What does your project relate to?
@@ -101,7 +101,6 @@ setup(
     data_files=[
         ('/etc', ['philipplay.yaml']),
         ('/lib/udev/rules.d', ['scripts/98-usbstick.rules']),
-      # ('/etc/xdg/autostart', ['scripts/philipplay-autostart.desktop']),
     ],
 
     # To provide executable scripts, use entry points in preference to the

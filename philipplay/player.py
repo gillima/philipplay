@@ -54,10 +54,16 @@ class Player(object):
         :param str filename: Absolute path to the audio file to be played
         """
         self.stop()
+        if not filename:
+            return
+
         logger.info('play song %s', filename)
         mixer.music.set_endevent(NEXT_SONG)
-        mixer.music.load(filename)
-        mixer.music.play()
+        try:
+            mixer.music.load(filename)
+            mixer.music.play()
+        except pygame.error:
+            self.stop()
 
     def stop(self):
         """Stops any file which is currently played by the audio player"""

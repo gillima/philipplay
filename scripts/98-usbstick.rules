@@ -1,1 +1,8 @@
-ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"
+KERNEL!="sd[a-z][0-9]", GOTO="end_of_script"
+ENV{dir_name}="usb"
+
+ACTION=="add", RUN+="/usr/bin/pmount -r -s -A -u 002 -c utf8 /dev/%k /media/%E{dir_name}"
+ACTION=="remove", ENV{dir_name}!="", RUN+="/usr/bin/pumount /media/%E{dir_name}"
+
+# Exit
+LABEL="end_of_script"
