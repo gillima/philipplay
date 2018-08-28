@@ -59,8 +59,11 @@ class Player(object):
 
         logger.info('play song %s', filename)
         mixer.music.set_endevent(NEXT_SONG)
-        mixer.music.load(filename)
-        mixer.music.play()
+        try:
+            mixer.music.load(filename)
+            mixer.music.play()
+        except pygame.error:
+            self.stop()
 
     def stop(self):
         """Stops any file which is currently played by the audio player"""
